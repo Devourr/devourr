@@ -1,24 +1,9 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Opting for rapid prototyping in Rails views to start. Expecting to embed a front-end later on in development.
 
-Things you may want to cover:
+Devourr Stack:
 
-* Ruby version
+* Ruby version: 2.7.0
 
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+* Rails version: 6.0.2
