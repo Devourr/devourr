@@ -3,4 +3,8 @@ Rails.application.routes.draw do
 
   root 'main#index'
 
+  # SSL with Let's Encrypt
+  # https://collectiveidea.com/blog/archives/2016/01/12/lets-encrypt-with-a-rails-app-on-heroku
+  get '/.well-known/acme-challenge/:id' => 'main#letsencrypt'
+
 end
