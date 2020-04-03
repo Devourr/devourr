@@ -1,6 +1,6 @@
 class AddUsernameToUsers < ActiveRecord::Migration[6.0]
   # don't need users' full names
-  # unique username will help users find each other in the app
+  # unique user_name will help users find each other in the app
 
   def up
     rename_column :users, :first_name, :name
