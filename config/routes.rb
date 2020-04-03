@@ -22,4 +22,10 @@ Rails.application.routes.draw do
     unlocks: 'users/unlocks'
   }
 
+  # helper urls to get user to login page
+  devise_scope :user do
+    get 'signin', to: 'devise/sessions#new'
+    get 'login', to: 'devise/sessions#new'
+  end
+
 end
