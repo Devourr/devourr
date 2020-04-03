@@ -28,7 +28,10 @@ gem 'jbuilder', '~> 2.7'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false
 
+# user authentication
 gem 'devise'
+# email client
+gem 'mailgun-ruby', '~>1.1.6'
 
 group :development, :test do
   gem 'dotenv-rails'
