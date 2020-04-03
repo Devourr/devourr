@@ -1,14 +1,17 @@
 module DeviseSetup
 
+  # no password_confirmation -- if params exclude it then it will not be required
+  # https://github.com/heartcombo/devise/wiki/Disable-password-confirmation-during-registration
+  # https://uxmovement.com/forms/why-the-confirm-password-field-must-die/
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_up) do |user|
-      user.permit(:email, :password, :password_confirmation, :first_name, :last_name)
+      user.permit(:email, :password, :first_name, :last_name)
     end
     devise_parameter_sanitizer.permit(:sign_in) do |user|
       user.permit(:password, :remember_me)
     end
     devise_parameter_sanitizer.permit(:account_update) do |user|
-      user.permit(:email, :current_password, :password, :password_confirmation, :first_name, :last_name)
+      user.permit(:email, :current_password, :password, :first_name, :last_name)
     end
   end
 
