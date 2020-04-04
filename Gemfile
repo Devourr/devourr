@@ -37,12 +37,20 @@ group :development, :test do
   gem 'dotenv-rails'
   gem 'pry', '~> 0.12.2'
   gem 'rspec-rails', '~> 4.0.0'
+  gem 'capybara'
 end
 
 group :development do
   # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
   gem 'web-console', '>= 3.3.0'
   gem 'listen', '>= 3.0.5', '< 3.2'
+end
+
+group :test do
+  gem 'factory_bot_rails'
+  gem 'shoulda-matchers', '~> 3.1'
+  gem 'faker'
+  gem 'database_cleaner'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
