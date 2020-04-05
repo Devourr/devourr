@@ -27,6 +27,15 @@ RSpec.describe 'Confirmations', type: :feature do
         expect(current_path).to_not eq new_user_session_path
         expect(page).to have_content 'Confirmation token is invalid'
       end
+
+      it 'already confirmed' do
+        user.confirm
+        expect_confirmation_succeeds
+        visit user_confirmation_path({ confirmation_token: user.confirmation_token })
+        expect(current_path).to_not eq new_user_session_path
+        # curious if this is a security concern, can check if email taken from sign_up
+        expect(page).to have_content 'Email was already confirmed, please try signing in'
+      end
     end
 
     context 'confirmation succeeds' do
