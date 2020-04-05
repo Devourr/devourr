@@ -23,10 +23,18 @@ RSpec.describe 'Registrations', type: :feature do
           end
         end
 
-        it 'password too short' do
-          fill_sign_up_form
-          fill_in 'Password', with: 'passwo'
-          expect_sign_up_fails
+        context 'password' do
+          it 'too short' do
+            fill_sign_up_form
+            fill_in 'Password', with: 'passwo'
+            expect_sign_up_fails
+          end
+
+          it 'too long' do
+            fill_sign_up_form
+            fill_in 'Password', with: 'long' * 33 # max 128 chars
+            expect_sign_up_fails
+          end
         end
       end
 
