@@ -14,11 +14,19 @@ RSpec.describe 'Registrations', type: :feature do
 
     context 'sign up fails' do
 
-      it 'invalid params' do
-        required_params.map do |skip_param|
-          fill_sign_up_form skip_param
+      context 'invalid params' do
+        it 'skipped params' do
+          required_params.map do |skip_param|
+            fill_sign_up_form skip_param
+            expect_sign_up_fails
+            visit new_user_registration_path
+          end
+        end
+
+        it 'password too short' do
+          fill_sign_up_form
+          fill_in 'Password', with: 'passwo'
           expect_sign_up_fails
-          visit new_user_registration_path
         end
       end
 
