@@ -2,6 +2,8 @@
 
 class Users::ConfirmationsController < Devise::ConfirmationsController
 
+  # custom view to tell newly signed up user to check their email
+  # flash notice was not appearing after redirect to sign_in page
   def confirm
   end
 
