@@ -7,16 +7,16 @@ RSpec.describe 'Registrations', type: :feature do
 
   context 'sign up page' do
 
+    before(:each) do
+      visit new_user_registration_path
+      expect_success new_user_registration_path
+    end
+
     context 'sign up fails' do
 
-      before(:each) do
-        visit new_user_registration_path
-        expect_success new_user_registration_path
-      end
-
       it 'invalid params' do
-        required_params.map do |param|
-          fill_sign_up_form(param)
+        required_params.map do |skip_param|
+          fill_sign_up_form skip_param
           expect_sign_up_fails
           visit new_user_registration_path
         end
@@ -36,6 +36,15 @@ RSpec.describe 'Registrations', type: :feature do
         end
       end
     end
+
+    it 'sign up succeeds' do
+      fill_sign_up_form
+      expect_sign_up_succeeds
+      expect(User.last.confirmed?).to be_falsey
+      expect(current_path).to eq confirm_path
+      expect(page).to have_content "You will receive an email with instructions about how to confirm your account in a few minutes."
+
+    end
   end
 
   def fill_sign_up_form(skip_param = nil)
@@ -49,5 +58,11 @@ RSpec.describe 'Registrations', type: :feature do
     expect do
       click_button 'Sign up'
     end.to change(User, :count).by(0)
+  end
+
+  def expect_sign_up_succeeds
+    expect do
+      click_button 'Sign up'
+    end.to change(User, :count).by(1)
   end
 end
