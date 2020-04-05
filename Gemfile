@@ -38,6 +38,7 @@ group :development, :test do
   gem 'pry', '~> 0.12.2'
   gem 'rspec-rails', '~> 4.0.0'
   gem 'capybara'
+  gem 'factory_bot_rails'
 end
 
 group :development do
@@ -47,7 +48,6 @@ group :development do
 end
 
 group :test do
-  gem 'factory_bot_rails'
   gem 'shoulda-matchers', '~> 3.1'
   gem 'faker'
   gem 'database_cleaner'
