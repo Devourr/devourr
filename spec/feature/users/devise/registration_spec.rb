@@ -43,7 +43,6 @@ RSpec.describe 'Registrations', type: :feature do
       expect(User.last.confirmed?).to be_falsey
       expect(current_path).to eq confirm_path
       expect(page).to have_content "You will receive an email with instructions about how to confirm your account in a few minutes."
-
     end
   end
 
