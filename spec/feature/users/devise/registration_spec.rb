@@ -36,6 +36,16 @@ RSpec.describe 'Registrations', type: :feature do
             expect_sign_up_fails
           end
         end
+
+        it 'user_name has special characters' do
+          failing_user_names = ['!!!', 'abc-123', 'abc 123']
+          failing_user_names.map do |user_name|
+            fill_sign_up_form
+            fill_in 'Username', with: user_name
+            expect_sign_up_fails
+            expect(page).to have_content 'Username must only contain letters and numbers'
+          end
+        end
       end
 
       context 'non-unique user attributes' do
@@ -53,12 +63,30 @@ RSpec.describe 'Registrations', type: :feature do
       end
     end
 
-    it 'sign up succeeds' do
-      fill_sign_up_form
-      expect_sign_up_succeeds
-      expect(User.last.confirmed?).to be_falsey
-      expect(current_path).to eq confirm_path
-      expect(page).to have_content "You will receive an email with instructions about how to confirm your account in a few minutes."
+    context 'sign up succeeds' do
+      it 'with standard input' do
+        fill_sign_up_form
+        expect_sign_up_succeeds
+        expect(User.last.confirmed?).to be_falsey
+        expect(current_path).to eq confirm_path
+        expect(page).to have_content "You will receive an email with instructions about how to confirm your account in a few minutes."
+      end
+
+      it 'with extra spaces' do
+        fill_in 'Name', with: "#{Faker::Name.name} "
+        fill_in 'Username', with: "#{Faker::Hipster.word} "
+        fill_in 'Email', with: "#{Faker::Internet.email} "
+        fill_in 'Password', with: 'password!'
+
+        expect_sign_up_succeeds
+        user = User.last
+        expect(user.confirmed?).to be_falsey
+        expect(current_path).to eq confirm_path
+        expect(page).to have_content "You will receive an email with instructions about how to confirm your account in a few minutes."
+        expect(user.name).to eq user.name.strip
+        expect(user.user_name).to eq user.user_name.strip
+        expect(user.email).to eq user.email.strip
+      end
     end
   end
 
