@@ -32,7 +32,7 @@ RSpec.describe 'Sessions', type: :feature do
 
       after(:each) do
         click_button 'Log in'
-        expect(current_path).to_not eq(root_path)
+        expect_not_root_path
       end
 
       it 'wrong password' do
@@ -61,7 +61,7 @@ RSpec.describe 'Sessions', type: :feature do
       it 'confirmed user' do
         user.confirm
         attempt_sign_in
-        expect(current_path).to eq(root_path)
+        expect_root_path
       end
     end
   end

@@ -8,23 +8,23 @@ RSpec.describe 'Locks', type: :feature do
     it 'after 5 invalid attempts' do
       3.times do
         attempt_sign_in(user.email, 'wrongpasswordz')
-        expect(current_path).to_not eq(root_path)
+        expect_not_root_path
         expect(page).to have_content 'Invalid Email or password.'
       end
 
       # warning
       attempt_sign_in(user.email, 'wrongpasswordz')
-      expect(current_path).to_not eq(root_path)
+      expect_not_root_path
       expect(page).to have_content 'You have one more attempt before your account is locked.'
 
       # locked
       attempt_sign_in(user.email, 'wrongpassword')
-      expect(current_path).to_not eq(root_path)
+      expect_not_root_path
       expect(page).to have_content 'Your account is locked.'
 
       # can't sign in
       attempt_sign_in # => with correct credentials
-      expect(current_path).to_not eq(root_path)
+      expect_not_root_path
       expect(page).to have_content 'Your account is locked.'
     end
   end
@@ -83,7 +83,7 @@ RSpec.describe 'Locks', type: :feature do
       expect(page).to have_content 'Your account has been unlocked successfully. Please sign in to continue.'
 
       attempt_sign_in
-      expect(current_path).to eq root_path
+      expect_root_path
     end
 
     it 'after time' do
@@ -111,13 +111,13 @@ RSpec.describe 'Locks', type: :feature do
     fill_in 'Email', with: user.email
     fill_in 'Password', with: user.password
     click_button 'Log in'
-    expect(current_path).to_not eq(root_path)
+    expect_not_root_path
   end
 
   def expect_login_success
     fill_in 'Email', with: user.email
     fill_in 'Password', with: user.password
     click_button 'Log in'
-    expect(current_path).to eq(root_path)
+    expect_root_path
   end
 end

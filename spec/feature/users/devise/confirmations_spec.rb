@@ -75,7 +75,7 @@ RSpec.describe 'Confirmations', type: :feature do
     fill_in 'Email', with: user.email
     fill_in 'Password', with: user.password
     click_button 'Log in'
-    expect(current_path).to_not eq(root_path)
+    expect_not_root_path
   end
 
   def expect_confirmation_succeeds
@@ -86,6 +86,6 @@ RSpec.describe 'Confirmations', type: :feature do
     fill_in 'Email', with: user.email
     fill_in 'Password', with: user.password
     click_button 'Log in'
-    expect(current_path).to eq(root_path)
+    expect_root_path
   end
 end
