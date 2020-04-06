@@ -49,6 +49,12 @@ RSpec.describe 'Sessions', type: :feature do
         fill_in 'Email', with: user.email
         fill_in 'Password', with: user.password
       end
+
+      it 'locked user' do
+        confirmed_user.lock_access!
+        fill_in 'Email', with: confirmed_user.email
+        fill_in 'Password', with: confirmed_user.password
+      end
     end
 
     context 'can sign in' do
