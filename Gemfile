@@ -33,6 +33,9 @@ gem 'devise'
 # email client
 gem 'mailgun-ruby', '~>1.1.6'
 
+# found from here: https://learn.onemonth.com/defensive-hacking-how-to-prevent-a-brute-force-attack/
+gem 'rack-attack'
+
 group :development, :test do
   gem 'dotenv-rails'
   gem 'pry', '~> 0.12.2'
