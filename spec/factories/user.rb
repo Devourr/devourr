@@ -3,8 +3,16 @@ FactoryBot.define do
 
   factory :user do
     name { Faker::Name.name }
-    user_name { "#{Faker::Hipster.word}#{Faker::Number.number(digits: 4)}" }
-    email { Faker::Internet.email }
+
+    # periods and spaces allowed based off twitter and instagram
+    sequence :user_name do |n|
+      "#{Faker::Hipster.word.gsub(/ /, '.')}_#{n}"
+    end
+
+    sequence :email do |n|
+      "person#{n}@example.com"
+    end
+
     password { 'password' }
 
     # user must confirm their account before signing in
