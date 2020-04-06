@@ -5,7 +5,9 @@ FactoryBot.define do
     name { Faker::Name.name }
 
     sequence :user_name do |n|
-      "#{Faker::Hipster.word}#{n}"
+      # some hipster words have "-" (╯°□°)╯︵ ┻━┻
+      # https://github.com/faker-ruby/faker/blob/master/doc/default/hipster.md
+      "#{Faker::Hipster.word.gsub(/-/, '.')}_#{n}"
     end
 
     sequence :email do |n|
