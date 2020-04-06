@@ -22,34 +22,41 @@ RSpec.describe 'Sessions', type: :feature do
   end
 
   context 'sign in page' do
-    it 'cannot sign in with invalid params' do
+
+    before(:each) do
       visit new_user_session_path
       expect_success new_user_session_path
-
-      # fill_in 'Email', with: confirmed_user.email # test no email
-      fill_in 'Password', with: confirmed_user.password
-      click_button 'Log in'
-      expect(current_path).to_not eq(root_path)
     end
 
-    it 'can sign in with valid params' do
-      visit new_user_session_path
-      expect_success new_user_session_path
+    context 'cannot sign in' do
 
-      fill_in 'Email', with: confirmed_user.email
-      fill_in 'Password', with: confirmed_user.password
-      click_button 'Log in'
-      expect(current_path).to eq(root_path)
+      after(:each) do
+        click_button 'Log in'
+        expect(current_path).to_not eq(root_path)
+      end
+
+      it 'wrong password' do
+        fill_in 'Email', with: confirmed_user.email
+        fill_in 'Password', with: 'wrongpassword'
+      end
+
+      it 'invalid params' do
+        # fill_in 'Email', with: confirmed_user.email # test no email
+        fill_in 'Password', with: confirmed_user.password
+      end
+
+      it 'unconfirmed user' do
+        fill_in 'Email', with: user.email
+        fill_in 'Password', with: user.password
+      end
     end
 
-    it 'cannot sign in with valid params for unconfirmed user' do
-      visit new_user_session_path
-      expect_success new_user_session_path
-
-      fill_in 'Email', with: user.email
-      fill_in 'Password', with: user.password
-      click_button 'Log in'
-      expect(current_path).to_not eq(root_path)
+    context 'can sign in' do
+      it 'confirmed user' do
+        user.confirm
+        attempt_sign_in
+        expect(current_path).to eq(root_path)
+      end
     end
   end
 end

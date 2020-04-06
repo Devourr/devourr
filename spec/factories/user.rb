@@ -4,9 +4,8 @@ FactoryBot.define do
   factory :user do
     name { Faker::Name.name }
 
-    # periods and spaces allowed based off twitter and instagram
     sequence :user_name do |n|
-      "#{Faker::Hipster.word.gsub(/ /, '.')}_#{n}"
+      "#{Faker::Hipster.word}#{n}"
     end
 
     sequence :email do |n|
