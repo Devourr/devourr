@@ -3,7 +3,7 @@ module DeviseSetup
 
   included do
     before_action :configure_permitted_parameters, if: :devise_controller?
-    before_action :authenticate_user!
+    before_action :authenticate_user!, unless: :devise_controller?
   end
 
   # no password_confirmation -- if params exclude it then it will not be required
