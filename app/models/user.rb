@@ -15,9 +15,7 @@ class User < ApplicationRecord
   validates_presence_of :name
   validates_presence_of :user_name
   validates_uniqueness_of :user_name
-  # periods and spaces allowed based off twitter and instagram
-  validates :user_name, format: { with: /\A[a-zA-Z0-9._]+\z/,
-                                  message: :format_error_message }
+  validate :user_name_allowed?
   # 30 for Instagram, 15 for Twitter
   validates_length_of :user_name, maximum: 30
   # check some more of this out later
@@ -34,10 +32,12 @@ class User < ApplicationRecord
     self.user_name = user_name.strip
   end
 
-  # username still failing in some factorybots
-  def format_error_message
-    binding.pry
-    'Usernames can only use letters, numbers, underscores and periods.'
+  # periods and spaces allowed based off twitter and instagram
+  def user_name_allowed?
+    return if user_name.match /\A[a-zA-Z0-9._]+\z/
+
+    errors.add(:user_name, 'Usernames can only use letters, numbers, underscores and periods.')
+    false
   end
 
 end
