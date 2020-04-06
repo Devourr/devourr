@@ -71,6 +71,9 @@ RSpec.configure do |config|
   # https://github.com/plataformatec/devise/wiki/How-To:-sign-in-and-out-a-user-in-Request-type-specs-(specs-tagged-with-type:-:request)
   config.include Devise::Test::IntegrationHelpers, type: :feature
 
+  # https://andycroll.com/ruby/replace-timecop-with-rails-time-helpers-in-rspec/
+  config.include ActiveSupport::Testing::TimeHelpers
+
   config.include RequestSpecHelper, type: :feature
   config.include RedirectSpecHelper, type: :feature
 end
