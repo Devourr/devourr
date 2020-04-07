@@ -114,15 +114,15 @@ RSpec.describe 'Registrations', type: :feature do
 
       context 'user_name' do
         it 'letters and numbers' do
-          fill_in 'Username', with: "#{Faker::Hipster.word}123"
+          fill_in 'Username', with: "username123"
         end
 
         it 'underscore' do
-          fill_in 'Username', with: "#{Faker::Hipster.word}_123"
+          fill_in 'Username', with: "username_123"
         end
 
         it 'period' do
-          fill_in 'Username', with: "#{Faker::Hipster.word}.123"
+          fill_in 'Username', with: "username.123"
         end
 
         it 'min length' do
@@ -147,7 +147,7 @@ RSpec.describe 'Registrations', type: :feature do
 
       it 'with extra spaces' do
         fill_in 'Name', with: "#{Faker::Name.name} "
-        fill_in 'Username', with: "#{Faker::Hipster.word} "
+        fill_in 'Username', with: "username "
         fill_in 'Email', with: "#{Faker::Internet.email} "
         fill_in 'Password', with: 'password!'
       end
