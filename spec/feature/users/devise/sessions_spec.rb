@@ -58,10 +58,26 @@ RSpec.describe 'Sessions', type: :feature do
     end
 
     context 'can sign in' do
-      it 'confirmed user' do
+
+      before(:each) do
         user.confirm
+      end
+
+      it 'confirmed user' do
         attempt_sign_in
         expect_root_path
+      end
+
+      it 'and sign out' do
+        expect(page).to_not have_content 'Sign out'
+        attempt_sign_in
+        expect_root_path
+        expect(page).to have_content 'Sign out'
+        click_link 'Sign out'
+        expect_not_root_path
+        expect(page).to have_content 'Signed out successfully.'
+        visit root_path
+        expect_not_root_path
       end
     end
   end
