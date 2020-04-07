@@ -5,6 +5,7 @@ RSpec.describe 'Registrations', type: :feature do
   let(:required_params) { ['name', 'user_name', 'email', 'password']}
   let(:existing_user) { create(:user) }
   let(:user_name_invalid_error_message) { 'Usernames can only use letters, numbers, underscores and periods.' }
+  let(:user_confirm_instructions) { 'You will receive an email with instructions about how to confirm your account in a few minutes.' }
 
   context 'sign up page' do
 
@@ -24,48 +25,51 @@ RSpec.describe 'Registrations', type: :feature do
           end
         end
 
-        context 'password' do
-          it 'too short' do
+        context 'attribute' do
+
+          before(:each) do
             fill_sign_up_form
-            fill_in 'Password', with: 'passwo'
+          end
+
+          after(:each) do
             expect_sign_up_fails
           end
 
-          it 'too long' do
-            fill_sign_up_form
-            fill_in 'Password', with: 'long' * 33 # max 128 chars
-            expect_sign_up_fails
-          end
-        end
+          context 'password' do
+            it 'too short' do
+              fill_in 'Password', with: 'passwo'
+            end
 
-        context 'user_name' do
-          it 'special character' do
-            fill_sign_up_form
-            fill_in 'Username', with: 'user1234!'
-            expect_sign_up_fails
-            expect(page).to have_content user_name_invalid_error_message
+            it 'too long' do
+              fill_in 'Password', with: 'p' * 129 # max 128 chars
+            end
           end
 
-          it 'hyphen' do
-            fill_sign_up_form
-            fill_in 'Username', with: 'user-1234'
-            expect_sign_up_fails
-            expect(page).to have_content user_name_invalid_error_message
-          end
+          context 'user_name' do
+            it 'special character' do
+              fill_in 'Username', with: 'user1234!'
+              expect_sign_up_fails
+              expect(page).to have_content user_name_invalid_error_message
+            end
 
-          it 'space' do
-            fill_sign_up_form
-            fill_in 'Username', with: 'user 1234'
-            expect_sign_up_fails
-            expect(page).to have_content user_name_invalid_error_message
-          end
+            it 'hyphen' do
+              fill_in 'Username', with: 'user-1234'
+              expect_sign_up_fails
+              expect(page).to have_content user_name_invalid_error_message
+            end
 
-          it 'too long' do
-            fill_sign_up_form
-            # 30 for Instagram, 15 for Twitter
-            fill_in 'Username', with: 'a' * 31 # => 31 chars
-            expect_sign_up_fails
-            expect(page).to have_content 'User name is too long (maximum is 30 characters)'
+            it 'space' do
+              fill_in 'Username', with: 'user 1234'
+              expect_sign_up_fails
+              expect(page).to have_content user_name_invalid_error_message
+            end
+
+            it 'too long' do
+              # 30 for Instagram, 15 for Twitter
+              fill_in 'Username', with: 'a' * 31 # => 31 chars
+              expect_sign_up_fails
+              expect(page).to have_content 'User name is too long (maximum is 30 characters)'
+            end
           end
         end
       end
@@ -75,12 +79,15 @@ RSpec.describe 'Registrations', type: :feature do
           fill_sign_up_form
           fill_in 'Username', with: existing_user.user_name
           expect_sign_up_fails
+          expect(page).to have_content 'User name has already been taken'
+          expect(page).to have_content 'User name has already been taken'
         end
 
         it 'matching email' do
           fill_sign_up_form
           fill_in 'Email', with: existing_user.email
           expect_sign_up_fails
+          expect_confirm_path
         end
       end
     end
@@ -95,8 +102,7 @@ RSpec.describe 'Registrations', type: :feature do
         expect_sign_up_succeeds
         user = User.last
         expect(user.confirmed?).to be_falsey
-        expect(current_path).to eq confirm_path
-        expect(page).to have_content "You will receive an email with instructions about how to confirm your account in a few minutes."
+        expect_confirm_path
 
         expect(user.name).to eq user.name.strip
         expect(user.user_name).to eq user.user_name.strip
@@ -129,6 +135,16 @@ RSpec.describe 'Registrations', type: :feature do
         end
       end
 
+      context 'password' do
+        it 'has special characters' do
+          fill_in 'Password', with: 'password!@#/+=_s'
+        end
+
+        it 'has space' do
+          fill_in 'Password', with: 'pass word'
+        end
+      end
+
       it 'with extra spaces' do
         fill_in 'Name', with: "#{Faker::Name.name} "
         fill_in 'Username', with: "#{Faker::Hipster.word} "
@@ -155,5 +171,10 @@ RSpec.describe 'Registrations', type: :feature do
     expect do
       click_button 'Sign up'
     end.to change(User, :count).by(1)
+  end
+
+  def expect_confirm_path
+    expect(current_path).to eq confirm_path
+    expect(page).to have_content user_confirm_instructions
   end
 end
