@@ -1,5 +1,5 @@
 <% flash.each do |type, message| %>
-  <% unless message.strip.empty? %>
+  <% if message.present? && message.class == String %>
     <% if type == 'success' %>
       <div class="flash flash-success"><%= message %></div>
     <% elsif type == 'notice' %>
