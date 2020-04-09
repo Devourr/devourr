@@ -67,6 +67,35 @@ RSpec.describe 'Confirmations', type: :feature do
     end
   end
 
+  context 'request confirmation instructions' do
+
+    before(:each) do
+      visit new_user_confirmation_path
+    end
+
+    after(:each) do
+      click_button 'Resend confirmation instructions'
+      expect(current_path).to eq new_user_session_path
+      # don't give away that email exists
+      expect(page).to have_content 'If your email address exists in our database, you will receive an email with instructions for how to confirm your email address in a few minutes.'
+    end
+
+    context 'existing user' do
+      it 'not confirmed' do
+        fill_in 'Email', with: user.email
+      end
+
+      it 'already confirmed' do
+        user.confirm
+        fill_in 'Email', with: user.email
+      end
+    end
+
+    it 'non-existing user' do
+      fill_in 'Email', with: 'fake@email.com'
+    end
+  end
+
   def expect_confirmation_fails
     expect(user.reload.confirmed?).to be_falsey
   end

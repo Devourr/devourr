@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'Passwords', type: :feature do
 
   let(:user) { create(:user, :confirmed) }
-  let(:password_reset_instructions) { 'You will receive an email with instructions on how to reset your password in a few minutes.' }
+  let(:password_reset_instructions) { 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes.' }
 
   # from profile
   context 'edit password' do
