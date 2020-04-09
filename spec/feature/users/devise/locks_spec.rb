@@ -3,29 +3,34 @@ require 'rails_helper'
 RSpec.describe 'Locks', type: :feature do
 
   let(:user) { create(:user, :confirmed) }
+  # config.paranoid
+  # don't let hacker know email is in use
+  let(:user_locked_error_message) { 'Invalid Email or password.' }
 
   context 'locks a user' do
     it 'after 5 invalid attempts' do
-      3.times do
+      5.times do
         attempt_sign_in(user.email, 'wrongpasswordz')
         expect_not_root_path
-        expect(page).to have_content 'Invalid Email or password.'
+        expect(page).to have_content user_locked_error_message
       end
 
-      # warning
-      attempt_sign_in(user.email, 'wrongpasswordz')
-      expect_not_root_path
-      expect(page).to have_content 'You have one more attempt before your account is locked.'
+      # warning before locking
+      # removed so email is not revealed as valid
+      # attempt_sign_in(user.email, 'wrongpasswordz')
+      # expect_not_root_path
+      # expect(page).to have_content 'You have one more attempt before your account is locked.'
 
       # locked
-      attempt_sign_in(user.email, 'wrongpassword')
-      expect_not_root_path
-      expect(page).to have_content 'Your account is locked.'
+      # removed so email is not revealed as valid
+      # attempt_sign_in(user.email, 'wrongpassword')
+      # expect_not_root_path
+      # expect(page).to have_content 'Your account is locked.'
 
       # can't sign in
       attempt_sign_in # => with correct credentials
       expect_not_root_path
-      expect(page).to have_content 'Your account is locked.'
+      expect(page).to have_content user_locked_error_message
     end
   end
 
@@ -65,7 +70,7 @@ RSpec.describe 'Locks', type: :feature do
 
       visit new_user_session_path
       expect_login_fails
-      expect(page).to have_content 'Your account is locked.'
+      expect(page).to have_content user_locked_error_message
 
       travel_back
     end
