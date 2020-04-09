@@ -26,7 +26,12 @@ Rails.application.routes.draw do
     get 'signin', to: 'devise/sessions#new'
     get 'login', to: 'devise/sessions#new'
     get 'signup', to: 'devise/registrations#new'
+    get '/signout', to: 'devise/sessions#delete', as: :sign_out
     get 'confirm', to: 'users/confirmations#confirm'
+    get 'profile/edit', to: 'users/registrations#edit'
   end
+
+  resources :user, only: [:show]
+  get ':user_name', to: 'users#show', as: 'profile'
 
 end
