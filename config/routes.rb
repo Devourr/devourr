@@ -36,6 +36,9 @@ Rails.application.routes.draw do
   # to allow for `/my_username1` to access profile
   # need to add constraint for '.' that some user names can have
   # https://guides.rubyonrails.org/routing.html#segment-constraints
+  # TODO: write a blog about how TDD saved my ass bc I didn't know
+  #   a user_name with a '.' was selecting a format after the split
+  #     `user.name3` #=> params {"controller"=>"users", "action"=>"show", "user_name"=>"user", "format"=>"name3"}
   get ':user_name', to: 'users#show', as: 'profile',
     constraints: { user_name: /[a-zA-Z0-9._]+/}
 
