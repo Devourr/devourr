@@ -8,7 +8,7 @@ FactoryBot.define do
       # some hipster words have "-'&" (╯°□°)╯︵ ┻━┻
       # https://github.com/faker-ruby/faker/blob/master/doc/default/hipster.md
       # https://github.com/faker-ruby/faker/blob/master/lib/locales/en/hipster.yml
-      "#{Faker::Hipster.word.gsub(/[^0-9A-Za-z]/, '')}_#{n}"
+      "#{Faker::Hipster.word.gsub(/[^0-9A-Za-z]/, '')}._#{n}"
     end
 
     sequence :email do |n|

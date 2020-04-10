@@ -2,7 +2,11 @@
   <nav>
     <ul>
       <% if user_signed_in? %>
-        <li><%= link_to 'Profile', profile_path(current_user.user_name) %></li>
+        <% if on_profile? %>
+          <li><%= link_to 'Edit profile', edit_user_registration_path(current_user.user_name) %></li>
+        <% else %>
+          <li><%= link_to 'Profile', profile_path(current_user.user_name) %></li>
+        <% end %>
         <li><%= link_to 'Sign out', sign_out_path %></li>
       <% end %>
     </ul>

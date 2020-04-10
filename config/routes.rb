@@ -32,6 +32,11 @@ Rails.application.routes.draw do
   end
 
   resources :user, only: [:show]
-  get ':user_name', to: 'users#show', as: 'profile'
+
+  # to allow for `/my_username1` to access profile
+  # need to add constraint for '.' that some user names can have
+  # https://guides.rubyonrails.org/routing.html#segment-constraints
+  get ':user_name', to: 'users#show', as: 'profile',
+    constraints: { user_name: /[a-zA-Z0-9._]+/}
 
 end
