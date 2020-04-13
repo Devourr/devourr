@@ -70,6 +70,15 @@ RSpec.describe 'Registrations', type: :feature do
               expect_sign_up_fails
               expect(page).to have_content 'User name is too long (maximum is 30 characters)'
             end
+
+            # prevent user names being taken that could belong to route paths
+            # or reserved or offensive
+            it 'blocked' do
+              blocked_user_name = create(:blocked_user_name, user_name: 'admin')
+              fill_in 'Username', with: blocked_user_name.user_name
+              expect_sign_up_fails
+              expect(page).to have_content 'Username is not available'
+            end
           end
         end
       end

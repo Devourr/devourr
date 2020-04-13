@@ -7,3 +7,9 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 User.create!(name: ENV['DEVELOPER_NAME'], user_name: ENV['DEVELOPER_USER_NAME'], email: ENV['DEVELOPER_EMAIL'], password: 'password', confirmed_at: DateTime.now)
+
+# examples of usernames I don't want people to pick when creating accounts
+# problems with routing, offensive, reserved
+%w(admin home user discover explore notifications butthead fuck shaq guyfieri).map do |w|
+  BlockedUserName.create!(user_name: w)
+end

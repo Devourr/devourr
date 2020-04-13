@@ -17,9 +17,10 @@ class User < ApplicationRecord
   validates_presence_of :name
   validates_presence_of :user_name
   validates_uniqueness_of :user_name
-  validate :user_name_allowed?
   # 30 for Instagram, 15 for Twitter
   validates_length_of :user_name, maximum: 30
+  validate :user_name_allowed?
+  validate :user_name_available?
   # check some more of this out later
   # https://hackernoon.com/performing-custom-validations-in-rails-an-example-9a373e807144
 
@@ -43,6 +44,13 @@ class User < ApplicationRecord
     return if user_name.match /\A[a-zA-Z0-9._]+\z/
 
     errors.add(:user_name, 'Usernames can only use letters, numbers, underscores and periods.')
+    false
+  end
+
+  def user_name_available?
+    return if !BlockedUserName.find_by_user_name(user_name)
+
+    errors.add(:user_name, 'Username is not available')
     false
   end
 
