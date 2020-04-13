@@ -7,7 +7,8 @@ class User < ApplicationRecord
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
-         :confirmable, :lockable, :timeoutable, :trackable
+         :confirmable, :lockable, :timeoutable, :trackable,
+         authentication_keys: [:login]
 
   before_validation :downcase_email
   before_validation :remove_empty_spaces
@@ -16,7 +17,7 @@ class User < ApplicationRecord
   validates_uniqueness_of :email
   validates_presence_of :name
   validates_presence_of :user_name
-  validates_uniqueness_of :user_name
+  validates_uniqueness_of :user_name, { case_sensitive: false }
   # 30 for Instagram, 15 for Twitter
   validates_length_of :user_name, maximum: 30
   validate :user_name_allowed?
@@ -25,6 +26,22 @@ class User < ApplicationRecord
   # https://hackernoon.com/performing-custom-validations-in-rails-an-example-9a373e807144
 
   after_validation :check_for_email_taken
+
+  # https://github.com/heartcombo/devise/wiki/How-To:-Allow-users-to-sign-in-using-their-username-or-email-address#create-a-login-virtual-attribute-in-the-user-model
+  attr_writer :login
+  def login
+    @login || self.user_name || self.email
+  end
+
+  def self.find_for_database_authentication(warden_conditions)
+    conditions = warden_conditions.dup
+    if login = conditions.delete(:login)
+      where(conditions.to_hash).where(["lower(user_name) = :value OR lower(email) = :value", { value: login.downcase.strip }]).first
+    elsif conditions.has_key?(:user_name) || conditions.has_key?(:email)
+      conditions[:email].downcase!.strip if conditions[:email]
+      where(conditions.to_hash).first
+    end
+  end
 
   private
 

@@ -36,23 +36,23 @@ RSpec.describe 'Sessions', type: :feature do
       end
 
       it 'wrong password' do
-        fill_in 'Email', with: confirmed_user.email
+        fill_in 'Login', with: confirmed_user.email
         fill_in 'Password', with: 'wrongpassword'
       end
 
       it 'invalid params' do
-        # fill_in 'Email', with: confirmed_user.email # test no email
+        # fill_in 'Login', with: confirmed_user.email # test no email
         fill_in 'Password', with: confirmed_user.password
       end
 
       it 'unconfirmed user' do
-        fill_in 'Email', with: user.email
+        fill_in 'Login', with: user.email
         fill_in 'Password', with: user.password
       end
 
       it 'locked user' do
         confirmed_user.lock_access!
-        fill_in 'Email', with: confirmed_user.email
+        fill_in 'Login', with: confirmed_user.email
         fill_in 'Password', with: confirmed_user.password
       end
     end
@@ -78,6 +78,11 @@ RSpec.describe 'Sessions', type: :feature do
         expect(page).to have_content 'Signed out successfully.'
         visit root_path
         expect_not_root_path
+      end
+
+      it 'with user name' do
+        attempt_sign_in confirmed_user.user_name
+        expect_root_path
       end
     end
   end

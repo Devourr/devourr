@@ -15,11 +15,11 @@ module RequestSpecHelper
     logout(warden_scope(resource))
   end
 
-  def attempt_sign_in(email = user.email, password = user.password)
+  def attempt_sign_in(login = user.email, password = user.password)
     visit new_user_session_path
     expect_success new_user_session_path
 
-    fill_in 'Email', with: email
+    fill_in 'Login', with: login
     fill_in 'Password', with: password
     click_button 'Log in'
   end
