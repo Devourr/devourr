@@ -28,7 +28,7 @@ Rails.application.routes.draw do
     get 'signup', to: 'devise/registrations#new'
     get '/signout', to: 'devise/sessions#delete', as: :sign_out
     get 'confirm', to: 'users/confirmations#confirm'
-    get 'profile/edit', to: 'users/registrations#edit'
+    get ':user_name/edit', to: 'users/registrations#edit', as: :edit_profile
   end
 
   resources :user, only: [:show]
