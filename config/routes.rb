@@ -33,6 +33,10 @@ Rails.application.routes.draw do
 
   resources :user, only: [:show]
 
+  # place all other routes above here so they are inherited first
+  # TODO: come up with an example list of usernames that should not be allowed
+  # that match potential route paths like: admin, user, home, discover, etc.
+
   # to allow for `/my_username1` to access profile
   # need to add constraint for '.' that some user names can have
   # https://guides.rubyonrails.org/routing.html#segment-constraints
@@ -41,5 +45,7 @@ Rails.application.routes.draw do
   #     `user.name3` #=> params {"controller"=>"users", "action"=>"show", "user_name"=>"user", "format"=>"name3"}
   get ':user_name', to: 'users#show', as: 'profile',
     constraints: { user_name: /[a-zA-Z0-9._]+/}
+  # was getting a 'no route matches' error for `/:id` on user
+  get ':id', to: 'users#show'
 
 end
