@@ -28,7 +28,7 @@ Rails.application.routes.draw do
     get 'signup', to: 'devise/registrations#new'
     get 'signout', to: 'devise/sessions#destroy', as: :sign_out
     get 'confirm', to: 'users/confirmations#confirm'
-    get ':user_name/edit', to: 'users/registrations#edit', as: :edit_profile
+    # get ':user_name/edit', to: 'users/registrations#edit', as: :edit_profile
   end
 
   resources :user, only: [:show]
@@ -43,7 +43,9 @@ Rails.application.routes.draw do
   # TODO: write a blog about how TDD saved my ass bc I didn't know
   #   a user_name with a '.' was selecting a format after the split
   #     `user.name3` #=> params {"controller"=>"users", "action"=>"show", "user_name"=>"user", "format"=>"name3"}
-  get ':user_name', to: 'users#show', as: 'profile',
+  get ':user_name', to: 'users#show', as: :profile,
+    constraints: { user_name: /[a-zA-Z0-9._]+/}
+  get ':user_name/edit', to: 'users/registrations#edit', as: :edit_profile,
     constraints: { user_name: /[a-zA-Z0-9._]+/}
   # was getting a 'no route matches' error for `/:id` on user
   get ':id', to: 'users#show'
