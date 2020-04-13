@@ -115,7 +115,7 @@ RSpec.describe 'Passwords', type: :feature do
   end
 
   def expect_login_success
-    fill_in 'Email', with: user.email
+    fill_in 'Login', with: user.email
     fill_in 'Password', with: user.password
     click_button 'Log in'
     expect(current_path).to eq(root_path)

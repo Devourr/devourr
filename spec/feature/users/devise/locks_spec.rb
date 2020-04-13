@@ -5,7 +5,7 @@ RSpec.describe 'Locks', type: :feature do
   let(:user) { create(:user, :confirmed) }
   # config.paranoid
   # don't let hacker know email is in use
-  let(:user_locked_error_message) { 'Invalid Email or password.' }
+  let(:user_locked_error_message) { 'Invalid Login or password.' }
 
   context 'locks a user' do
     it 'after 5 invalid attempts' do
@@ -113,14 +113,14 @@ RSpec.describe 'Locks', type: :feature do
   end
 
   def expect_login_fails
-    fill_in 'Email', with: user.email
+    fill_in 'Login', with: user.email
     fill_in 'Password', with: user.password
     click_button 'Log in'
     expect_not_root_path
   end
 
   def expect_login_success
-    fill_in 'Email', with: user.email
+    fill_in 'Login', with: user.email
     fill_in 'Password', with: user.password
     click_button 'Log in'
     expect_root_path
