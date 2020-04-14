@@ -29,6 +29,11 @@ Rails.application.routes.draw do
     get 'signout', to: 'devise/sessions#destroy', as: :sign_out
     get 'confirm', to: 'users/confirmations#confirm'
     # get ':user_name/edit', to: 'users/registrations#edit', as: :edit_profile
+
+    get ':user_name/edit', to: 'users/registrations#edit', as: :edit_profile,
+      constraints: { user_name: /[a-zA-Z0-9._]+/}
+    # adding route for id to avoid `no route matches` error
+    get ':id/edit', to: 'users/registrations#edit' #
   end
 
   resources :user, only: [:show]
@@ -45,8 +50,7 @@ Rails.application.routes.draw do
   #     `user.name3` #=> params {"controller"=>"users", "action"=>"show", "user_name"=>"user", "format"=>"name3"}
   get ':user_name', to: 'users#show', as: :profile,
     constraints: { user_name: /[a-zA-Z0-9._]+/}
-  get ':user_name/edit', to: 'users/registrations#edit', as: :edit_profile,
-    constraints: { user_name: /[a-zA-Z0-9._]+/}
+
   # was getting a 'no route matches' error for `/:id` on user
   get ':id', to: 'users#show'
 

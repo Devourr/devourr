@@ -8,7 +8,6 @@ RSpec.describe 'User edit', type: :feature do
 
   before(:each) do
     sign_in user
-    binding.pry
     visit edit_profile_path(user.user_name)
   end
 
@@ -16,28 +15,34 @@ RSpec.describe 'User edit', type: :feature do
     it 'redirects to root path' do
       visit edit_profile_path('nobody')
       expect_root_path
+      expect(page).to have_content 'Requested page is not available.'
     end
   end
 
   context 'existing user' do
 
     it 'redirects if requested by id' do
-      visit "/#{user.id}"
+      visit "/#{user.id}/edit"
       expect_root_path
+      expect(page).to have_content 'Requested page is not available.'
     end
 
     it 'user content' do
       within '#content' do
-        expect(page).to have_content(user.name)
+        expect(page).to have_content("Edit #{user.name}")
       end
     end
 
-    context 'user is me' do
-      it 'shows edit profile link' do
+    context 'update fails' do
+      it 'missing attributes' do
         within '#header' do
           expect(page).to have_link('Edit profile', href: "/#{user.user_name}/edit")
         end
       end
+    end
+
+    context 'update succeeds' do
+
     end
   end
 end

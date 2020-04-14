@@ -15,14 +15,22 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # end
 
   # GET /resource/edit
-  # def edit
-  #   super
-  # end
+  def edit
+    if User.find_by_user_name(params[:user_name]) == current_user
+      super
+    else
+      redirect_to root_path, notice: 'Requested page is not available.'
+    end
+  end
 
   # PUT /resource
-  # def update
-  #   super
-  # end
+  def update
+    if User.find_by_user_name(params[:user_name]) == current_user
+      super
+    else
+      redirect_to root_path, notice: 'Requested page is not available.'
+    end
+  end
 
   # DELETE /resource
   # def destroy
