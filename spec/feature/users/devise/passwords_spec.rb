@@ -24,8 +24,8 @@ RSpec.describe 'Passwords', type: :feature do
   context 'request password reset' do
 
     it 'non-existing user' do
-      visit new_user_password_path
-      expect_success new_user_password_path
+      visit password_reset_path
+      expect_success password_reset_path
       submit_password_reset('fake@email.com')
 
       # don't show if email is invalid
@@ -47,7 +47,7 @@ RSpec.describe 'Passwords', type: :feature do
         end
 
         it 'request password reset' do
-          visit new_user_password_path
+          visit password_reset_path
           expect_root_path
         end
 
@@ -59,8 +59,8 @@ RSpec.describe 'Passwords', type: :feature do
     end
 
     it 'can access without resetting password' do
-      visit new_user_password_path
-      expect_success new_user_password_path
+      visit password_reset_path
+      expect_success password_reset_path
       submit_password_reset
       visit new_user_session_path
       expect_login_success
@@ -69,8 +69,8 @@ RSpec.describe 'Passwords', type: :feature do
     context 'existing user' do
 
       before(:each) do
-        visit new_user_password_path
-        expect_success new_user_password_path
+        visit password_reset_path
+        expect_success password_reset_path
       end
 
       after(:each) do
