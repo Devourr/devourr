@@ -27,7 +27,11 @@ RSpec.describe 'User edit', type: :feature do
       expect(page).to have_content 'Requested page is not available.'
     end
 
-    it 'user content' do
+    it 'has content' do
+      within '#header' do
+        expect(page).to have_link('Edit password', href: "/#{user.user_name}/account/edit")
+      end
+
       within '#content' do
         expect(page).to have_content("Edit #{user.name}")
       end
@@ -35,9 +39,7 @@ RSpec.describe 'User edit', type: :feature do
 
     context 'update fails' do
       it 'missing attributes' do
-        within '#header' do
-          expect(page).to have_link('Edit password', href: "/#{user.user_name}/account/edit")
-        end
+
       end
     end
 
