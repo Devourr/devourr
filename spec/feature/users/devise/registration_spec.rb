@@ -163,6 +163,101 @@ RSpec.describe 'Registrations', type: :feature do
     end
   end
 
+  # stripped down to just changing the password
+  context 'edit registration' do
+
+    let(:user) { create(:user, :confirmed) }
+
+    before(:each) do
+      sign_in user
+    end
+
+    it 'has expected content' do
+      visit root_path
+      expect(page).to_not have_link 'Edit password'
+      visit profile_path(user.user_name)
+      expect(page).to_not have_link 'Edit password'
+      click_link 'Edit profile'
+      expect(page).to have_link 'Edit password'
+      click_link 'Edit password'
+      expect(current_path).to_not eq edit_user_password_path
+      expect_not_root_path
+      expect(page).to_not have_link 'Edit password'
+      expect(page).to_not have_content 'Email'
+      expect(page).to have_content 'Old password'
+      expect(page).to have_content 'New password'
+    end
+
+    context 'fails' do
+
+      before(:each) do
+        visit edit_account_profile_path(user.user_name)
+      end
+
+      it 'wrong password' do
+        fill_in 'Old password', with: 'wrongpassword'
+        fill_in 'New password', with: 'Newpassword!0'
+        expect_update_registration_fails
+      end
+
+      context 'invalid params' do
+        context 'skipped params' do
+          it 'old password' do
+            fill_edit_registration_form 'old_password'
+            expect_update_registration_fails
+            expect(page).to have_content "Current password can't be blank"
+          end
+
+          it 'new password' do
+            visit edit_account_profile_path(user.user_name)
+            # capybara not respecting required element
+            # tested manually and moving on
+            # this will suffice
+            expect(find_field('New password')[:required]).to be_present
+
+            # fill_edit_registration_form 'new_password'
+            # expect_update_registration_fails
+            # # added `required` to new password
+            # # because form submitted with just old password will
+            # # basically only submit it by itself and change nothing
+            # # then redirect to profile, so prevent that
+            # expect(page).to have_content "Please fill out this field."
+
+          end
+        end
+
+        context 'attribute' do
+
+          before(:each) do
+            fill_edit_registration_form
+          end
+
+          after(:each) do
+            expect_update_registration_fails
+          end
+
+          context 'password' do
+            it 'too short' do
+              fill_in 'New password', with: 'passwo'
+            end
+
+            it 'too long' do
+              fill_in 'New password', with: 'p' * 129 # max 128 chars
+            end
+          end
+        end
+      end
+    end
+
+    context 'succeeds' do
+      it 'as expected' do
+        visit edit_account_profile_path(user.user_name)
+        fill_edit_registration_form
+        expect_update_registration_succeeds
+      end
+    end
+  end
+
   def fill_sign_up_form(skip_param = nil)
     fill_in 'Name', with: Faker::Name.name unless skip_param == 'name'
     fill_in 'Username', with: Faker::Hipster.word unless skip_param == 'user_name'
@@ -185,5 +280,20 @@ RSpec.describe 'Registrations', type: :feature do
   def expect_confirm_path
     expect(current_path).to eq confirm_path
     expect(page).to have_content user_confirm_instructions
+  end
+
+  def fill_edit_registration_form(skip_param = nil)
+    fill_in 'Old password', with: 'password' unless skip_param == 'old_password'
+    fill_in 'New password', with: 'new_password' unless skip_param == 'new_password'
+  end
+
+  def expect_update_registration_fails
+    click_button 'Update'
+    expect(current_path).to_not eq profile_path(user.user_name)
+  end
+
+  def expect_update_registration_succeeds
+    click_button 'Update'
+    expect(current_path).to eq profile_path(user.user_name)
   end
 end

@@ -72,4 +72,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
     # redirect to custom view with the confirmation instructions in the text instead of flash
     confirm_path
   end
+
+  # https://github.com/heartcombo/devise/wiki/How-To:-Customize-the-redirect-after-a-user-edits-their-profile
+  def after_update_path_for(resource)
+    profile_path(resource.user_name)
+  end
 end

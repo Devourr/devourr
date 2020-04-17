@@ -1,6 +1,6 @@
 <h2>Edit <%= resource_name.to_s.humanize %></h2>
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+<%= form_for(resource, as: resource_name, url: update_account_profile_path(resource.user_name), html: { method: :put }) do |f| %>
   <%= render "devise/shared/error_messages", resource: resource %>
 
   <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
@@ -14,17 +14,14 @@
 
   <div class="field">
     <%= f.label :password, 'New password' %><br />
-    <%= f.password_field :password, autocomplete: "new-password" %>
+    <%= f.password_field :password, autocomplete: "new-password", required: true %>
     <% if @minimum_password_length %>
       <br />
       <em><%= @minimum_password_length %> characters minimum</em>
     <% end %>
   </div>
 
-  <div class="field">
-    <%= f.label :password_confirmation, 'Confirm new password' %><br />
-    <%= f.password_field :password_confirmation %>
-  </div>
+  <%# no password_confirmation: https://cxl.com/blog/password-ux/ %>
 
   <div class="actions">
     <%= f.submit "Update" %>

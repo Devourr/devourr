@@ -5,21 +5,8 @@ RSpec.describe 'Passwords', type: :feature do
   let(:user) { create(:user, :confirmed) }
   let(:password_reset_instructions) { 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes.' }
 
-  # from profile
-  context 'edit password' do
-
-    before(:each) do
-      sign_in user
-    end
-
-    context 'fails' do
-
-    end
-
-    context 'succeeds' do
-
-    end
-  end
+  # edit password (when logged in)
+  # moved to spec/feature/users/devise/registration_spec.rb
 
   context 'request password reset' do
 

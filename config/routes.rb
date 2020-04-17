@@ -29,10 +29,16 @@ Rails.application.routes.draw do
     get 'signout', to: 'devise/sessions#destroy', as: :sign_out
     get 'confirm', to: 'users/confirmations#confirm'
     get 'users/password/reset', to: 'users/passwords#new', as: :password_reset
-    get ':user_name/edit', to: 'users/registrations#edit', as: :edit_profile,
+
+    # /pat/account/edit # just password
+    # /pat/edit # name username email etc
+    get ':user_name/account/edit', to: 'users/registrations#edit', as: :edit_account_profile,
       constraints: { user_name: /[a-zA-Z0-9._]+/}
+    put ':user_name/account', to: 'users/registrations#update', as: :update_account_profile,
+      constraints: { user_name: /[a-zA-Z0-9._]+/}
+
     # adding route for id to avoid `no route matches` error
-    get ':id/edit', to: 'users/registrations#edit'
+    get ':id/account/edit', to: 'users/registrations#edit'
   end
 
   resources :user, only: [:show]
@@ -52,5 +58,13 @@ Rails.application.routes.draw do
 
   # was getting a 'no route matches' error for `/:id` on user
   get ':id', to: 'users#show'
+
+  get ':user_name/edit', to: 'users#edit', as: :edit_profile,
+      constraints: { user_name: /[a-zA-Z0-9._]+/}
+  put ':user_name', to: 'users#update', as: :update_profile,
+      constraints: { user_name: /[a-zA-Z0-9._]+/}
+  # ditto from users#show
+  get ':id/edit', to: 'users#edit'
+
 
 end
