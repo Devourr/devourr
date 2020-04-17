@@ -72,10 +72,11 @@ RSpec.describe 'Sessions', type: :feature do
         expect(page).to_not have_content 'Sign out'
         attempt_sign_in
         expect_root_path
+        expect(page).to_not have_content 'Signed in successfully.'
         expect(page).to have_content 'Sign out'
         click_link 'Sign out'
         expect_not_root_path
-        expect(page).to have_content 'Signed out successfully.'
+        expect(page).to_not have_content 'Signed out successfully.'
         visit root_path
         expect_not_root_path
       end
