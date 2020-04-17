@@ -12,7 +12,9 @@ class UsersController < ApplicationController
 
   def set_user
     @user = User.find_by_user_name(params[:user_name])
-    redirect_to root_path if @user.nil?
+    if @user.nil?
+      redirect_to root_path, notice: 'Requested page is not available.'
+    end
   end
 
 end

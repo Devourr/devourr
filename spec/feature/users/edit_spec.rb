@@ -36,7 +36,7 @@ RSpec.describe 'User edit', type: :feature do
     context 'update fails' do
       it 'missing attributes' do
         within '#header' do
-          expect(page).to have_link('Edit profile', href: "/#{user.user_name}/edit")
+          expect(page).to have_link('Edit password', href: "/#{user.user_name}/account/edit")
         end
       end
     end
