@@ -184,6 +184,7 @@ RSpec.describe 'Registrations', type: :feature do
       expect_not_root_path
       expect(page).to_not have_link 'Edit password'
       expect(page).to_not have_content 'Email'
+      expect(page).to have_content 'Edit Password'
       expect(page).to have_content 'Old password'
       expect(page).to have_content 'New password'
     end
