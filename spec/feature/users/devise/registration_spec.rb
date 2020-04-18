@@ -290,11 +290,11 @@ RSpec.describe 'Registrations', type: :feature do
 
   def expect_update_registration_fails
     click_button 'Update'
-    expect(current_path).to_not eq profile_path(user.user_name)
+    expect_not_profile_path
   end
 
   def expect_update_registration_succeeds
     click_button 'Update'
-    expect(current_path).to eq profile_path(user.user_name)
+    expect_profile_path
   end
 end
