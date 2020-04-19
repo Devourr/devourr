@@ -49,6 +49,7 @@ RSpec.describe 'User edit', type: :feature do
           fill_edit_profile_form skip_param
           expect_update_profile_fails
           visit edit_profile_path(user.user_name)
+          # todo: expect errors
         end
       end
     end

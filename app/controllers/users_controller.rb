@@ -12,7 +12,7 @@ class UsersController < ApplicationController
     if @user.update(user_params)
       redirect_to @user, success: 'Profile was successfully updated.'
     else
-      flash[:notice] = @user.errors
+      flash[:errors] = @user.errors.full_messages
       redirect_to :edit_profile, user_name: @user.user_name
     end
   end

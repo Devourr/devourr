@@ -1,13 +1,1 @@
-<% flash.each do |type, message| %>
-  <% if message.present? && message.class == String %>
-    <% if type == 'success' %>
-      <div class="flash flash-success"><%= message %></div>
-    <% elsif type == 'notice' %>
-      <div class="flash flash-danger"><%= message %></div>
-    <% elsif type == 'warning' || type == 'alert' %>
-      <div class="flash flash-warning"><%= message %></div>
-    <% else %>
-      <div class="flash flash-info"><%= message %></div>
-    <% end %>
-  <% end %>
-<% end %>
+<div class="flash flash-<%= type %>"><%= text.html_safe %></div>

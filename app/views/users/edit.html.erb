@@ -1,7 +1,6 @@
 <h1>Edit Profile</h1>
 
 <%= form_for(@user, url: update_profile_path(@user.user_name), html: { method: :put }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: @user %>
 
   <% # https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete %>
 
