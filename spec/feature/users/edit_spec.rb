@@ -92,26 +92,26 @@ RSpec.describe 'User edit', type: :feature do
           it 'special character' do
             fill_in 'Username', with: 'user1234!'
             expect_update_profile_fails
-            expect(page).to have_content user_name_invalid_error_message
+            expect(page).to have_css('.flash', text: user_name_invalid_error_message)
           end
 
           it 'hyphen' do
             fill_in 'Username', with: 'user-1234'
             expect_update_profile_fails
-            expect(page).to have_content user_name_invalid_error_message
+            expect(page).to have_css('.flash', text: user_name_invalid_error_message)
           end
 
           it 'space' do
             fill_in 'Username', with: 'user 1234'
             expect_update_profile_fails
-            expect(page).to have_content user_name_invalid_error_message
+            expect(page).to have_css('.flash', text: user_name_invalid_error_message)
           end
 
           it 'too long' do
             # 30 for Instagram, 15 for Twitter
             fill_in 'Username', with: 'a' * 31 # => 31 chars
             expect_update_profile_fails
-            expect(page).to have_content 'User name is too long (maximum is 30 characters)'
+            expect(page).to have_css('.flash', text: 'User name is too long (maximum is 30 characters)')
           end
 
           # prevent user names being taken that could belong to route paths
@@ -120,7 +120,24 @@ RSpec.describe 'User edit', type: :feature do
             blocked_user_name = create(:blocked_user_name, user_name: 'admin')
             fill_in 'Username', with: blocked_user_name.user_name
             expect_update_profile_fails
-            expect(page).to have_content 'Username is not available'
+            expect(page).to have_css('.flash', text: 'Username is not available')
+          end
+        end
+
+        context 'non-unique user attributes' do
+          it 'matching user_name' do
+            existing_user = create(:user, :confirmed)
+            fill_edit_profile_form
+            fill_in 'Username', with: existing_user.user_name
+            expect_update_profile_fails
+            expect(page).to have_css('.flash', text: 'User name has already been taken')
+          end
+
+          it 'matching email' do
+            existing_user = create(:user, :confirmed)
+            fill_edit_profile_form
+            fill_in 'Email', with: existing_user.email
+            expect_update_profile_fails
           end
         end
       end
