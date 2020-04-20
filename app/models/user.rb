@@ -16,6 +16,8 @@ class User < ApplicationRecord
   validates_presence_of :email
   validates_uniqueness_of :email
   validates_presence_of :name
+  # https://ux.stackexchange.com/a/56165 # => what-is-a-good-name-length-limit
+  validates_length_of :name, maximum: 70
   validates_presence_of :user_name
   validates_uniqueness_of :user_name, { case_sensitive: false }
   # 30 for Instagram, 15 for Twitter

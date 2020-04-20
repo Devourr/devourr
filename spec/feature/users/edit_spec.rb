@@ -6,6 +6,7 @@ RSpec.describe 'User edit', type: :feature do
 
   let(:user) { create(:user, :confirmed) }
   let(:required_params) { ['name', 'user_name', 'email']}
+  let(:user_name_invalid_error_message) { 'Usernames can only use letters, numbers, underscores and periods.' }
 
   before(:each) do
     sign_in user
@@ -49,36 +50,77 @@ RSpec.describe 'User edit', type: :feature do
         end
       end
 
-      context 'missing attributes' do
-
-        it 'name' do
-          fill_edit_profile_form 'name'
-          expect_update_profile_fails
-          expect(page).to have_css('.flash', text: "Name can't be blank")
-        end
-
-        it 'user name' do
-          fill_edit_profile_form 'user_name'
-          expect_update_profile_fails
-          expect(page).to have_css('.flash', text: "User name can't be blank")
-          expect(page).to have_css('.flash', text: "User name Usernames can only use letters, numbers, underscores and periods.")
-        end
-
-        it 'email' do
-          fill_edit_profile_form 'email'
-          expect_update_profile_fails
-          expect(page).to have_css('.flash', text: "Name can't be blank")
-        end
-      end
-
       context 'invalid attributes' do
-        context 'user_name' do
 
+        context 'blank attributes' do
+          it 'name' do
+            fill_edit_profile_form 'name'
+            expect_update_profile_fails
+            expect(page).to have_css('.flash', text: "Name can't be blank")
+          end
+
+          it 'user name' do
+            fill_edit_profile_form 'user_name'
+            expect_update_profile_fails
+            expect(page).to have_css('.flash', text: "User name can't be blank")
+            expect(page).to have_css('.flash', text: user_name_invalid_error_message)
+          end
+
+          it 'email' do
+            fill_edit_profile_form 'email'
+            expect_update_profile_fails
+            expect(page).to have_css('.flash', text: "Email can't be blank")
+          end
+        end
+
+        context 'name' do
+          it 'too long' do
+            fill_in 'Name', with: 'a' * 71 # => 71 chars
+            expect_update_profile_fails
+            expect(page).to have_content 'Name is too long (maximum is 70 characters)'
+          end
+        end
+
+        context 'user_name' do
           it 'not unique' do
             other_user = create(:user, :confirmed)
-            fill_in 'User name', with: other_user.user_name
+            fill_in 'Username', with: other_user.user_name
             expect_update_profile_fails
             expect(page).to have_css('.flash', text: "User name has already been taken")
+          end
+
+          it 'special character' do
+            fill_in 'Username', with: 'user1234!'
+            expect_update_profile_fails
+            expect(page).to have_content user_name_invalid_error_message
+          end
+
+          it 'hyphen' do
+            fill_in 'Username', with: 'user-1234'
+            expect_update_profile_fails
+            expect(page).to have_content user_name_invalid_error_message
+          end
+
+          it 'space' do
+            fill_in 'Username', with: 'user 1234'
+            expect_update_profile_fails
+            expect(page).to have_content user_name_invalid_error_message
+          end
+
+          it 'too long' do
+            # 30 for Instagram, 15 for Twitter
+            fill_in 'Username', with: 'a' * 31 # => 31 chars
+            expect_update_profile_fails
+            expect(page).to have_content 'User name is too long (maximum is 30 characters)'
+          end
+
+          # prevent user names being taken that could belong to route paths
+          # or reserved or offensive
+          it 'blocked' do
+            blocked_user_name = create(:blocked_user_name, user_name: 'admin')
+            fill_in 'Username', with: blocked_user_name.user_name
+            expect_update_profile_fails
+            expect(page).to have_content 'Username is not available'
           end
         end
       end
@@ -91,7 +133,7 @@ RSpec.describe 'User edit', type: :feature do
 
   def fill_edit_profile_form(skip_param = nil)
     fill_in 'Name', with: skip_param == 'name' ? '' : 'My Name'
-    fill_in 'User name', with: skip_param == 'user_name' ? '' : 'new_user_name'
+    fill_in 'Username', with: skip_param == 'user_name' ? '' : 'new_user_name'
     fill_in 'Email', with: skip_param == 'email' ? '' : 'new@email.com'
   end
 

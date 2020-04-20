@@ -45,6 +45,14 @@ RSpec.describe 'Registrations', type: :feature do
             end
           end
 
+          context 'name' do
+            it 'too long' do
+              fill_in 'Name', with: 'a' * 71 # => 71 chars
+              expect_sign_up_fails
+              expect(page).to have_content 'Name is too long (maximum is 70 characters)'
+            end
+          end
+
           context 'user_name' do
             it 'special character' do
               fill_in 'Username', with: 'user1234!'
@@ -119,6 +127,16 @@ RSpec.describe 'Registrations', type: :feature do
       end
 
       it 'with standard input' do
+      end
+
+      context 'name' do
+        it 'has spaces' do
+          fill_in 'Name', with: 'First Last'
+        end
+
+        it 'upper limit' do
+          fill_in 'Name', with: 'A' * 69
+        end
       end
 
       context 'user_name' do
