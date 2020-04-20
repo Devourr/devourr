@@ -39,7 +39,7 @@ module ApplicationHelper
       end
     end
 
-    @messages.concat(flash_messages)
+    @messages.concat(flash_messages.uniq)
 
     ordered_messages = @messages.sort_by do |message|
       order.index(message[:type]) || order.length

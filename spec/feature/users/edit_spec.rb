@@ -40,16 +40,46 @@ RSpec.describe 'User edit', type: :feature do
 
     context 'update fails' do
 
-      before(:each) do
-        # visit edit_profile_path(user.user_name)
-      end
-
       it 'missing attributes' do
         required_params.map do |skip_param|
           fill_edit_profile_form skip_param
           expect_update_profile_fails
           visit edit_profile_path(user.user_name)
           # todo: expect errors
+        end
+      end
+
+      context 'missing attributes' do
+
+        it 'name' do
+          fill_edit_profile_form 'name'
+          expect_update_profile_fails
+          expect(page).to have_css('.flash', text: "Name can't be blank")
+        end
+
+        it 'user name' do
+          fill_edit_profile_form 'user_name'
+          expect_update_profile_fails
+          expect(page).to have_css('.flash', text: "User name can't be blank")
+          expect(page).to have_css('.flash', text: "User name Usernames can only use letters, numbers, underscores and periods.")
+        end
+
+        it 'email' do
+          fill_edit_profile_form 'email'
+          expect_update_profile_fails
+          expect(page).to have_css('.flash', text: "Name can't be blank")
+        end
+      end
+
+      context 'invalid attributes' do
+        context 'user_name' do
+
+          it 'not unique' do
+            other_user = create(:user, :confirmed)
+            fill_in 'User name', with: other_user.user_name
+            expect_update_profile_fails
+            expect(page).to have_css('.flash', text: "User name has already been taken")
+          end
         end
       end
     end
