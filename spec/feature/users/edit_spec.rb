@@ -8,6 +8,9 @@ RSpec.describe 'User edit', type: :feature do
   let(:required_params) { ['name', 'user_name', 'email']}
   let(:user_name_invalid_error_message) { 'Usernames can only use letters, numbers, underscores and periods.' }
 
+  # for testing mailers
+  # https://www.lucascaton.com.br/2010/10/25/how-to-test-mailers-in-rails-with-rspec/
+
   # I'm going crazy these variables are inconsistently nil ???
   # just going to code slightly less efficiently below
   # skipping below and may revisit later if necessary
@@ -145,16 +148,24 @@ RSpec.describe 'User edit', type: :feature do
 
           context 'matching email' do
 
-            it 'displays success so no leaking valid emails' do
+            before(:each) do
               existing_user = create(:user, :confirmed)
               existing_user_email = existing_user.email
               fill_edit_profile_form
               fill_in 'Email', with: existing_user_email
+            end
+
+            it 'displays success so no leaking valid emails' do
               expect_update_profile_succeeds
               expect_email_change_success_message(existing_user_email)
             end
 
-            # not send confirmation email to new email
+            it 'not send confirmation email to new email' do
+              expect do
+                expect_update_profile_succeeds
+              end.to change { ActionMailer::Base.deliveries.count }.by(1)
+              expect_email_change_to_send_confirmation_instructions
+            end
             # send confirmation email to old email
 
           end
@@ -164,7 +175,7 @@ RSpec.describe 'User edit', type: :feature do
 
     context 'update succeeds' do
       context 'email' do
-        it 'updates email' do
+        it 'shows message to confirm new email' do
           fill_edit_profile_form
           expect_update_profile_succeeds
           expect_email_change_success_message('new@email.com')
@@ -176,15 +187,66 @@ RSpec.describe 'User edit', type: :feature do
           expect do
             click_button 'Update'
           end.to change { ActionMailer::Base.deliveries.count }.by(1)
-          expect_email_change_to_send_confirmation_email
+          expect_email_change_to_send_confirmation_instructions
         end
+
+        # TODO: add email change warning email
+        # flow could be to just send email to old email upon email changing
+        # then add 'todo' to send email change warning email
         # interesting point regarding credential stuffing
         # https://ux.stackexchange.com/questions/58503/best-practices-for-a-change-of-email-user#comment208779_58553
+        # will want to have link in email warning/confirmation
+        # to old email to revert --> perhaps add `old_email` column
+        xit 'sends confirmation email to old address' do
+        end
+
+        # request change multiple times (typo)
+        it 'request email change multiple times (typo)' do
+          fill_edit_profile_form
+          click_button 'Update'
+          click_link 'Change this'
+          user.reload
+          expect(current_path).to eq edit_profile_path(user.user_name)
+          new_new_email = 'new2@email.com'
+          fill_in 'Email', with: new_new_email
+          click_button 'Update'
+          expect_email_change_success_message(new_new_email)
+          user.reload
+          expect(user.unconfirmed_email).to eq new_new_email
+        end
+
+        it 'allows confirmation of new email' do
+          old_email = user.email
+          fill_edit_profile_form
+          click_button 'Update'
+
+          # expect email to not change yet
+          user.reload
+          new_email = 'new@email.com'
+          expect(user.email).to eq old_email
+          expect(user.unconfirmed_email).to eq new_email
+
+          # click email link
+          visit user_confirmation_path({ confirmation_token: user.confirmation_token })
+          expect_confirmation_succeeds
+
+          # email is updated
+          user.reload
+          expect(user.email).to eq new_email
+
+          # redirect to root_path, not login page
+          expect(current_path).to eq root_path
+
+          # sign out, then back in with new email
+          sign_out user
+          expect_login_success
+        end
+
+
 
         # if user makes a typo in email change
         # https://ux.stackexchange.com/a/105809
 
-        # request change multiple times (typo)
         # request change but don't change, sign in with old email
         # request change and don't confirm, sign in with new email
         # request change and confirm, sign in with new email
@@ -211,7 +273,7 @@ RSpec.describe 'User edit', type: :feature do
     expect_profile_path
   end
 
-  def expect_email_change_to_send_confirmation_email
+  def expect_email_change_to_send_confirmation_instructions
     email = ActionMailer::Base.deliveries.last
     expect(email.to).to eq [new_email_user_params]
     user.reload
@@ -234,6 +296,17 @@ RSpec.describe 'User edit', type: :feature do
 
   def confirm_email_change_message(email)
     "A confirmation email has been sent to #{email}. Click the link in the email to confirm the email address change Change this."
+  end
+
+  def expect_confirmation_succeeds
+    expect(user.reload.confirmed?).to be_truthy
+  end
+
+  def expect_login_success
+    fill_in 'Login', with: user.email
+    fill_in 'Password', with: user.password
+    click_button 'Log in'
+    expect_root_path
   end
 
 end
