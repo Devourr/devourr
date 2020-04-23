@@ -8,6 +8,16 @@ RSpec.describe 'User edit', type: :feature do
   let(:required_params) { ['name', 'user_name', 'email']}
   let(:user_name_invalid_error_message) { 'Usernames can only use letters, numbers, underscores and periods.' }
 
+  # I'm going crazy these variables are inconsistently nil ???
+  # just going to code slightly less efficiently below
+  # skipping below and may revisit later if necessary
+  # interesting this is nil; must be reserved
+  let(:new_email_user_params) { 'new@email.com' }
+  # copied value to new variable seems to work {{ôvô?}}
+  # actually this became nil, and now ^ works...
+  let(:brand_new_email) { 'new@email.com' }
+
+
   before(:each) do
     sign_in user
     visit edit_profile_path(user.user_name)
@@ -133,18 +143,53 @@ RSpec.describe 'User edit', type: :feature do
             expect(page).to have_css('.flash', text: 'User name has already been taken')
           end
 
-          it 'matching email' do
-            existing_user = create(:user, :confirmed)
-            fill_edit_profile_form
-            fill_in 'Email', with: existing_user.email
-            expect_update_profile_fails
+          context 'matching email' do
+
+            it 'displays success so no leaking valid emails' do
+              existing_user = create(:user, :confirmed)
+              existing_user_email = existing_user.email
+              fill_edit_profile_form
+              fill_in 'Email', with: existing_user_email
+              expect_update_profile_succeeds
+              expect_email_change_success_message(existing_user_email)
+            end
+
+            # not send confirmation email to new email
+            # send confirmation email to old email
+
           end
         end
       end
     end
 
     context 'update succeeds' do
+      context 'email' do
+        it 'updates email' do
+          fill_edit_profile_form
+          expect_update_profile_succeeds
+          expect_email_change_success_message('new@email.com')
+        end
 
+        # https://www.lucascaton.com.br/2010/10/25/how-to-test-mailers-in-rails-with-rspec/
+        it 'sends confirmation email to new address' do
+          fill_edit_profile_form
+          expect do
+            click_button 'Update'
+          end.to change { ActionMailer::Base.deliveries.count }.by(1)
+          expect_email_change_to_send_confirmation_email
+        end
+        # interesting point regarding credential stuffing
+        # https://ux.stackexchange.com/questions/58503/best-practices-for-a-change-of-email-user#comment208779_58553
+
+        # if user makes a typo in email change
+        # https://ux.stackexchange.com/a/105809
+
+        # request change multiple times (typo)
+        # request change but don't change, sign in with old email
+        # request change and don't confirm, sign in with new email
+        # request change and confirm, sign in with new email
+        # request change and confirm, sign in with new email, then revert back to old email
+      end
     end
   end
 
@@ -156,11 +201,39 @@ RSpec.describe 'User edit', type: :feature do
 
   def expect_update_profile_fails
     click_button 'Update'
+    user.reload # capture update
     expect(page).to have_content 'Edit Profile'
   end
 
   def expect_update_profile_succeeds
     click_button 'Update'
+    user.reload # capture update
     expect_profile_path
   end
+
+  def expect_email_change_to_send_confirmation_email
+    email = ActionMailer::Base.deliveries.last
+    expect(email.to).to eq [new_email_user_params]
+    user.reload
+    expect_email_to_have_confirmation_path(email)
+  end
+
+  def expect_email_to_have_confirmation_path(email)
+    expect(email.body.raw_source).to have_link('Confirm my account', href: expect_user_confirmation_path)
+  end
+
+  # test showing `http://example.com`
+  # TODO: could figure it out, but this quick and dirty fix works for now
+  def expect_user_confirmation_path
+    'http://localhost:3000' + user_confirmation_path({ confirmation_token: user.confirmation_token })
+  end
+
+  def expect_email_change_success_message(email = user.email)
+    expect(page).to have_css('.flash-success', text: confirm_email_change_message(email))
+  end
+
+  def confirm_email_change_message(email)
+    "A confirmation email has been sent to #{email}. Click the link in the email to confirm the email address change Change this."
+  end
+
 end

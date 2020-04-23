@@ -1,5 +1,6 @@
 class User < ApplicationRecord
-  class EmailTaken < StandardError;end
+  class EmailTakenCreate < StandardError;end
+  class EmailTakenUpdate < StandardError;end
 
   # uuid primary key would break `.first` and `.last` methods
   # https://github.com/rails/rails/pull/34480
@@ -67,7 +68,7 @@ class User < ApplicationRecord
   end
 
   def user_name_available?
-    return if !BlockedUserName.find_by_user_name(user_name)
+    return unless BlockedUserName.find_by_user_name(user_name)
 
     errors.add(:user_name, 'Username is not available')
     false
@@ -77,9 +78,17 @@ class User < ApplicationRecord
   def check_for_email_taken
     return unless errors.details.key?(:email)
 
-    raise EmailTaken if only_email_errors? && only_email_taken_errors?
+    # redirect to /confirm if email is taken from create profile
+    # redirect to /user_name if email is taken from update profile
+    if prevent_email_leak?
+      raise persisted? ? EmailTakenUpdate : EmailTakenCreate
+    end
 
     scrub_email_taken_errors
+  end
+
+  def prevent_email_leak?
+    only_email_errors? && only_email_taken_errors?
   end
 
   def only_email_errors?
