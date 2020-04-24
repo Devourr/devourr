@@ -148,26 +148,24 @@ RSpec.describe 'User edit', type: :feature do
 
           context 'matching email' do
 
-            before(:each) do
+            it 'displays success so no leaking valid emails' do
               existing_user = create(:user, :confirmed)
               existing_user_email = existing_user.email
               fill_edit_profile_form
               fill_in 'Email', with: existing_user_email
-            end
-
-            it 'displays success so no leaking valid emails' do
               expect_update_profile_succeeds
               expect_email_change_success_message(existing_user_email)
             end
 
             it 'not send confirmation email to new email' do
+              existing_user = create(:user, :confirmed)
+              existing_user_email = existing_user.email
+              fill_edit_profile_form
+              fill_in 'Email', with: existing_user_email
               expect do
                 expect_update_profile_succeeds
-              end.to change { ActionMailer::Base.deliveries.count }.by(1)
-              expect_email_change_to_send_confirmation_instructions
+              end.to change { ActionMailer::Base.deliveries.count }.by(0)
             end
-            # send confirmation email to old email
-
           end
         end
       end
@@ -186,8 +184,22 @@ RSpec.describe 'User edit', type: :feature do
           fill_edit_profile_form
           expect do
             click_button 'Update'
-          end.to change { ActionMailer::Base.deliveries.count }.by(1)
+          end.to change { ActionMailer::Base.deliveries.count }.by(2)
           expect_email_change_to_send_confirmation_instructions
+        end
+
+        it 'sends changed email to prior address' do
+          old_email = user.email
+          fill_edit_profile_form
+          expect do
+            click_button 'Update'
+
+            # click email link
+            visit user_confirmation_path({ confirmation_token: user.confirmation_token })
+            expect_confirmation_succeeds
+          end.to change { ActionMailer::Base.deliveries.count }.by(2)
+
+          expect_email_changed_email(old_email)
         end
 
         # TODO: add email change warning email
@@ -241,7 +253,7 @@ RSpec.describe 'User edit', type: :feature do
           expect_not_root_path
         end
 
-        it 'allows confirmation of new email' do
+        it 'request change and confirm, sign in with new email' do
           old_email = user.email
           fill_edit_profile_form
           click_button 'Update'
@@ -264,16 +276,11 @@ RSpec.describe 'User edit', type: :feature do
           expect(current_path).to eq root_path
 
           # sign out, then back in with new email
-          sign_out user
+          click_link 'Sign out'
           expect_login_success
         end
 
-
-
-
-
-        # request change and confirm, sign in with new email
-        # request change and confirm, sign in with new email, then revert back to old email
+        # TODO: request change and confirm, sign in with new email, then revert back to old email
       end
     end
   end
@@ -298,13 +305,20 @@ RSpec.describe 'User edit', type: :feature do
 
   def expect_email_change_to_send_confirmation_instructions
     email = ActionMailer::Base.deliveries.last
-    expect(email.to).to eq [new_email_user_params]
+    expect(email.to).to eq ['new@email.com']
     user.reload
     expect_email_to_have_confirmation_path(email)
   end
 
   def expect_email_to_have_confirmation_path(email)
     expect(email.body.raw_source).to have_link('Confirm my account', href: expect_user_confirmation_path)
+  end
+
+  def expect_email_changed_email(old_email)
+    email = ActionMailer::Base.deliveries.first
+    expect(email.to).to eq [old_email]
+    user.reload
+    expect(email.body.raw_source).to have_content "We're contacting you to notify you that your email is being changed to new@email.com"
   end
 
   # test showing `http://example.com`
