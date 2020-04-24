@@ -226,6 +226,19 @@ RSpec.describe 'User edit', type: :feature do
           expect_login_success
         end
 
+        it "request change and don't confirm, sign in with new email" do
+          fill_edit_profile_form
+          click_button 'Update'
+
+          user.reload
+          click_link 'Sign out'
+
+          fill_in 'Login', with: user.unconfirmed_email
+          fill_in 'Password', with: user.password
+          click_button 'Log in'
+          expect_not_root_path
+        end
+
         it 'allows confirmation of new email' do
           old_email = user.email
           fill_edit_profile_form
@@ -258,7 +271,6 @@ RSpec.describe 'User edit', type: :feature do
         # if user makes a typo in email change
         # https://ux.stackexchange.com/a/105809
 
-        # request change and don't confirm, sign in with new email
         # request change and confirm, sign in with new email
         # request change and confirm, sign in with new email, then revert back to old email
       end
