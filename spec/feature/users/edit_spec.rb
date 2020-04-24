@@ -200,6 +200,8 @@ RSpec.describe 'User edit', type: :feature do
         xit 'sends confirmation email to old address' do
         end
 
+        # if user makes a typo in email change
+        # https://ux.stackexchange.com/a/105809
         it 'request email change multiple times (typo)' do
           fill_edit_profile_form
           click_button 'Update'
@@ -268,8 +270,7 @@ RSpec.describe 'User edit', type: :feature do
 
 
 
-        # if user makes a typo in email change
-        # https://ux.stackexchange.com/a/105809
+
 
         # request change and confirm, sign in with new email
         # request change and confirm, sign in with new email, then revert back to old email
