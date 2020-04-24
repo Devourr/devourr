@@ -200,7 +200,6 @@ RSpec.describe 'User edit', type: :feature do
         xit 'sends confirmation email to old address' do
         end
 
-        # request change multiple times (typo)
         it 'request email change multiple times (typo)' do
           fill_edit_profile_form
           click_button 'Update'
@@ -213,6 +212,18 @@ RSpec.describe 'User edit', type: :feature do
           expect_email_change_success_message(new_new_email)
           user.reload
           expect(user.unconfirmed_email).to eq new_new_email
+        end
+
+        it "request change but don't change, sign in with old email" do
+          current_email = user.email
+          fill_edit_profile_form
+          click_button 'Update'
+
+          user.reload
+          click_link 'Sign out'
+          expect(user.email).to eq current_email
+
+          expect_login_success
         end
 
         it 'allows confirmation of new email' do
@@ -247,7 +258,6 @@ RSpec.describe 'User edit', type: :feature do
         # if user makes a typo in email change
         # https://ux.stackexchange.com/a/105809
 
-        # request change but don't change, sign in with old email
         # request change and don't confirm, sign in with new email
         # request change and confirm, sign in with new email
         # request change and confirm, sign in with new email, then revert back to old email
