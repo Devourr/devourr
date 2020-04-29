@@ -1,0 +1,17 @@
+<header id="header">
+  <nav>
+    <ul>
+      <% if user_signed_in? %>
+        <% if on_profile? %>
+          <li><%= link_to 'Edit profile', edit_profile_path(current_user.user_name) %></li>
+        <% else %>
+          <% if on_edit_profile? %>
+            <li><%= link_to 'Edit password', edit_account_profile_path(current_user.user_name) %></li>
+          <% end %>
+          <li><%= link_to 'Profile', profile_path(current_user.user_name) %></li>
+        <% end %>
+        <li><%= link_to 'Sign out', sign_out_path %></li>
+      <% end %>
+    </ul>
+  </nav>
+</header>

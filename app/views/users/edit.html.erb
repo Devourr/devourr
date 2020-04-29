@@ -1,0 +1,27 @@
+<h1>Edit Profile</h1>
+
+<%= form_for(@user, url: update_profile_path(@user.user_name), html: { method: :put }) do |f| %>
+
+  <% # https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete %>
+
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name, autocomplete: "name"  %>
+  </div>
+
+  <div class="field">
+    <%= f.label :user_name, 'Username' %><br />
+    <%= f.text_field :user_name, autocomplete: "username" %>
+  </div>
+
+  <div class="field">
+    <%= f.label :email %><br />
+    <%= f.email_field :email, autocomplete: "email" %>
+  </div>
+
+  <%# no password_confirmation: https://cxl.com/blog/password-ux/ %>
+
+  <div class="actions">
+    <%= f.submit "Update" %>
+  </div>
+<% end %>
