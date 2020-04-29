@@ -23,10 +23,8 @@ module EmailSecurity
     current_user.email != new_user_email
   end
 
-
   def user_update_message_success
     if user_email_updated
-
       email_user_update_message_success_for_flash
     else
       'Profile was successfully updated.'
