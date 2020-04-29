@@ -23,6 +23,7 @@ module ApplicationHelper
     @messages ||= []
 
     flash_messages = []
+    # flatten flat messages
     flash&.map do |type, text|
       # https://github.com/heartcombo/devise/issues/1777
       next if type == 'timedout'
@@ -48,9 +49,5 @@ module ApplicationHelper
     ordered_messages.map do |message|
       render_flash(message[:type], message[:text])
     end.join.html_safe
-
-    # @messages.concat(flash.map{|k,v| {type: k.to_sym, text: v}}) if flash
-    # @messages.sort_by{|m| order.index(m[:type]) || order.length}
-    #   .map{|m| render_flash(m[:type], m[:text]) }.join.html_safe
   end
 end
