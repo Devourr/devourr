@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo "Bring home the bacon 🐷🥓🤑"
+foreman start -f Procfile.dev
